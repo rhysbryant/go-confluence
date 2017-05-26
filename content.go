@@ -78,9 +78,36 @@ func (w *Wiki) UpdateContent(content *Content) (*Content, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	contentEndPoint, err := w.contentEndpoint(content.Id)
+	var id string
+	if content.Id != nil {
+		id = *content.Id
+	}
+	contentEndPoint, err := w.contentEndpoint(id)
 	req, err := http.NewRequest("PUT", contentEndPoint.String(), strings.NewReader(string(jsonbody)))
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := w.sendRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	var newContent Content
+	err = json.Unmarshal(res, &newContent)
+	if err != nil {
+		return nil, err
+	}
+
+	return &newContent, nil
+}
+
+func (w *Wiki) AddContent(content *Content) (*Content, error) {
+	jsonbody, err := json.Marshal(content)
+	if err != nil {
+		return nil, err
+	}
+
+	contentEndPoint, err := w.contentEndpoint("")
+	req, err := http.NewRequest("POST", contentEndPoint.String(), strings.NewReader(string(jsonbody)))
 	req.Header.Add("Content-Type", "application/json")
 
 	res, err := w.sendRequest(req)
