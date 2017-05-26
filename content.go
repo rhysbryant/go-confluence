@@ -7,17 +7,33 @@ import (
 	"strings"
 )
 
+type Ancestor struct {
+	Id string `json:"id"`
+}
+
+type Label struct {
+	Prefix *string `json:"prefix"`
+	Name   *string `json:"name"`
+}
+
 type Content struct {
-	Id     string `json:"id"`
-	Type   string `json:"type"`
-	Status string `json:"status"`
-	Title  string `json:"title"`
-	Body   struct {
+	Id     *string `json:"id"`
+	Type   string  `json:"type"`
+	Status string  `json:"status"`
+	Title  string  `json:"title"`
+	Space  struct {
+		Key string `json:"key"`
+	} `json:"space"`
+	Ancestors []Ancestor `json:"ancestors"`
+	Body      struct {
 		Storage struct {
 			Value          string `json:"value"`
 			Representation string `json:"representation"`
 		} `json:"storage"`
 	} `json:"body"`
+	Meta struct {
+		Labels []Label `json:"labels"`
+	} `json:"metadata"`
 	Version struct {
 		Number int `json:"number"`
 	} `json:"version"`
