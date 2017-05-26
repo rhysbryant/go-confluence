@@ -71,14 +71,15 @@ func (w *Wiki) sendRequest(req *http.Request) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	res, err := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
 
 	switch resp.StatusCode {
 	case http.StatusOK, http.StatusCreated, http.StatusPartialContent:
-		res, err := ioutil.ReadAll(resp.Body)
-		resp.Body.Close()
-		if err != nil {
-			return nil, err
-		}
+
 		return res, nil
 	case http.StatusNoContent, http.StatusResetContent:
 		return nil, nil
@@ -90,5 +91,5 @@ func (w *Wiki) sendRequest(req *http.Request) ([]byte, error) {
 		return nil, fmt.Errorf("Internal server error: %s", resp.Status)
 	}
 
-	return nil, fmt.Errorf("Unknown response status %s", resp.Status)
+	return nil, fmt.Errorf("Unknown response status %s:%s", string(res), resp.Status)
 }
